@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/home/annia/NetBeansProjects/Compilador/src/compilador/scanner.jflex</file>
+            <file>file:/home/annia/NetBeansProjects/Compilador/src/compilador/parser.java</file>
+            <file>file:/home/annia/NetBeansProjects/Compilador/src/compilador/Palabra.java</file>
+            <file>file:/home/annia/NetBeansProjects/Compilador/src/compilador/Yylex.java</file>
+            <file>file:/home/annia/NetBeansProjects/Compilador/src/compilador/parser.cup</file>
+            <file>file:/home/annia/NetBeansProjects/Compilador/src/compilador/texto.txt</file>
+            <file>file:/home/annia/NetBeansProjects/Compilador/src/compilador/Tokens.java</file>
+            <file>file:/home/annia/NetBeansProjects/Compilador/src/compilador/codigo.asm</file>
+            <file>file:/home/annia/NetBeansProjects/Compilador/src/compilador/Generador.java</file>
+            <file>file:/home/annia/NetBeansProjects/Compilador/src/compilador/Compilador.java</file>
+            <file>file:/home/annia/NetBeansProjects/Compilador/src/compilador/ExpBinaria.java</file>
+            <file>file:/home/annia/NetBeansProjects/Compilador/src/compilador/sym.java</file>
+        </group>
+    </open-files>
+</project-private>

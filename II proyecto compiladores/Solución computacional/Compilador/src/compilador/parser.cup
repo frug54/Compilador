@@ -1,0 +1,404 @@
+package compilador;
+import java_cup.runtime.Symbol;
+import java.util.Stack;
+import java_cup.runtime.*;
+import java.util.ArrayList;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
+parser code{:
+
+/*Declaraciones variables*/
+ArrayList <Tokens> listaTokens = new ArrayList<>();
+ArrayList <Objeto> listaObj = new ArrayList<>(); 
+
+/*Manejo de erres*/
+
+public void  report_error(String mensaje, Object info){
+    StringBuilder m = new StringBuilder("Error ocurrido");
+     if (info instanceof java_cup.runtime.Symbol) {
+            java_cup.runtime.Symbol s = ((java_cup.runtime.Symbol) info);
+            if (s.left >= 0) {                
+                m.append(" En la linea "+(s.left));
+                if (s.right >= 0)
+                    m.append(", columna "+(s.right));
+                    if(s.sym == 1)
+                        m.append(" Error");
+                    if(s.sym == 2)
+                        m.append(" Error en declaracion de la variable");
+                    if(s.sym == 3)
+                        m.append(" Error en inicio comentario");
+                    if(s.sym == 4)
+                        m.append(" Error en final comentario");
+                    if(s.sym == 5)
+                        m.append(" Error en Comentario de linea");
+                    if(s.sym == 6) 
+                        m.append(" Error cerca de la variable");
+                    if(s.sym == 7)
+                        m.append(" Error en Asignacion");
+                    if(s.sym == 8)
+                        m.append(" Error en punto coma");
+                    if(s.sym == 9)
+                        m.append(" Error en numero");
+                    if(s.sym == 10)
+                        m.append(" Error en operador aritmetico");
+                    if(s.sym == 11)
+                        m.append(" Error en operador aritmetico");
+                    if(s.sym == 12)
+                        m.append(" Error en operador aritmetico");
+                    if(s.sym == 13)
+                        m.append(" Error en operador aritmetico");
+                    if(s.sym == 14)
+                        m.append(" Error en operador logico");
+                    if(s.sym == 15)
+                        m.append(" Error en operador logico");
+                    if(s.sym == 16)
+                        m.append(" Error en operador logico");
+                    if(s.sym == 17)
+                        m.append(" Error en operador logico");
+                    if(s.sym == 18)
+                        m.append(" Error en operador logico");
+                    if(s.sym == 19)
+                        m.append(" Error en operador logico");
+                    if(s.sym == 20) 
+                        m.append(" Error en Declaracion sentencial si");
+                    if(s.sym == 21)
+                        m.append(" Error en Declaracion apertura bloque");
+                    if(s.sym == 22)
+                        m.append(" Error en Declaracion cierre bloque");
+                    if(s.sym == 23)
+                        m.append(" Error en Declaracion sentencial mientras");
+                    if(s.sym == 24)
+                        m.append(" Error en operador logico");
+                    if(s.sym == 25)
+                        m.append(" Error en parentesis derecho");
+                    if(s.sym == 26)
+                        m.append(" Error en parentesis izquierdo");
+                    if(s.sym == 27)
+                        m.append(" Error en Declaracion sentencial para");
+                    if(s.sym == 28)
+                        m.append(" Error en operador menor");
+                    if(s.sym == 29)
+                        m.append(" Error en operador mayor");
+                    if(s.sym == 30)
+                        m.append(" Error en coma");
+                    if(s.sym == 31)
+                        m.append(" Error en final declaracion");
+            }
+        }
+        m.append(" : "+mensaje);
+        System.err.println(m);
+    }
+
+
+
+
+
+void agregarToken(Tokens nuevoToken){
+    if(!existeToken(nuevoToken.getLlave())){
+       listaTokens.add(nuevoToken);
+    }else{
+        System.err.println("Doble declaracion de la variable: Error Semantico");
+    }
+    
+}
+
+
+
+void agregar_obj(Objeto nuevo){
+    listaObj.add(nuevo);
+}
+
+boolean existeToken(String llave){
+    for(Tokens token:listaTokens){
+        if(token.getLlave().equals(llave)){
+            return true;
+        }
+    }
+    return false;
+}
+
+public void imprimirtokens(){
+     for(int ind=0; ind < listaTokens.size(); ind ++){
+        Tokens temp = listaTokens.get(ind);
+        System.out.println(temp.getLlave());
+        System.out.println(temp.getValor());
+    }
+}
+
+public void imprimirtabla(){
+     for(int ind=0; ind < listaObj.size(); ind ++){
+        Objeto temp = listaObj.get(ind);
+        System.out.println("Nombre Variable: " + temp.getNombre());
+        System.out.println("Valor de la variable: " + temp.getValor());
+        System.out.println("tipo de la variable: " + temp.getTipo());
+        System.out.println();
+    }
+}
+
+
+
+String Code = "";
+ExpBinaria expBinaria = null;
+public void unrecovered_sintax_error(Symbol s) throws java.lang.Exception{
+
+}
+
+
+
+
+void ejecutar() throws IOException{
+String ruta = "/home/annia/NetBeansProjects/Compilador/src/compilador/codigo.asm";
+File archivo = new File(ruta);
+BufferedWriter bw;
+if(archivo.exists()) {
+      bw = new BufferedWriter(new FileWriter(archivo));
+      bw.write(Code);
+} else {
+      bw = new BufferedWriter(new FileWriter(archivo));
+      bw.write(Code);
+}
+ bw.close();
+}
+
+
+/*Para las salidas en el codigo ensamblador */
+void agregarSi(ExpBinaria expBinaria){
+    Code = Code+
+        "MOV  AX,"+ expBinaria.getExpIzq()+" \n"+
+        "MOV  BX,"+ expBinaria.getExpDer()+" \n"+
+        "CMP AX, BX \n"+
+        "JG MAYOR: \n"+
+            ":Codigo Else:"+"\n"+
+        "JMP DESPUES \n"+
+        "MAYOR: \n"+
+            ":Codigo del si: \n"+
+        "DESPUES :\n"+
+        ":Codigo de Salida:"+"\n";
+}
+
+Boolean validarNumerico(String num){
+    int prueba;
+    try{
+        prueba = Integer.parseInt(num);
+        return true;
+    }catch(Exception e){ 
+        return false;
+    }
+}
+
+
+void agregarMientras(ExpBinaria expBinaria){
+    String condicion = "";
+    switch(expBinaria.getOperador()){
+        case "==":
+            condicion = "JE";
+            break;
+        case ">":
+            condicion = "JG";
+            break;
+        case "<":
+            condicion = "JL";
+            break;
+        case "<=":
+            condicion = "JLE";
+            break;
+        case ">=":
+            condicion = "JGE";
+    }
+    Code = Code+
+        "MOV  AX,"+ expBinaria.getExpIzq()+" \n"+
+        "MOV  BX,"+ expBinaria.getExpDer()+" \n"+
+        "CMP AX, BX \n"+
+        condicion+" DESPUES"+"\n"+  
+        "CUMPLE:"+" \n"+
+        "Codigo del Mientras"+"\n"+
+        "CMP AX, BX \n"+
+        condicion+" CUMPLE"+"\n"+        
+        "DESPUES :\n"+
+        "Codigo de Salida"+"\n";
+}
+
+void agregarPara(ExpBinaria expBinaria){
+    String condicion = "";
+    switch(expBinaria.getOperador()){
+        case "==":
+            condicion = "JE";
+            break;
+        case ">":
+            condicion = "JG";
+            break;
+        case "<":
+            condicion = "JL";
+            break;
+        case "<=":
+            condicion = "JLE";
+            break;
+        case ">=":
+            condicion = "JGE";
+    }
+    Code = Code+
+        "MOV  AX,"+ expBinaria.getExpIzq()+" \n"+
+        "MOV  BX,"+ expBinaria.getExpDer()+" \n"+
+        "CMP AX, BX \n"+
+        condicion+" DESPUES"+"\n"+  
+        "CUMPLE:"+" \n"+
+        "INC AX  \n"+
+        "Codigo del Para"+"\n"+
+        "CMP AX, BX \n"+
+        condicion+" CUMPLE"+"\n"+        
+        "DESPUES :\n"+
+        "Codigo de Salida"+"\n" +
+        "/////////////////////////"+"\n";
+}
+
+
+
+
+private Stack pila = new Stack();
+
+
+
+
+:}
+
+terminal ID; 
+terminal INI_COMMENT, FIN_COMMENT, LINE_COMMENT, let, Asig, punto_coma ,Number, 
+         Multipl, Suma, Resta, Divide, ope_and, ope_or, ope_comp, ope_diferente, 
+         ope_menor_igual, ope_mayor_igual, senten_si, corch_derec, corch_izq, senten_mientras, 
+        ope_neg, parent_derec, parent_izq, senten_para, ope_menor, ope_mayor, coma, senten_fn;
+
+non terminal Doc, ident;
+non terminal Grammar,Ruler,Comment, block_comment, block_comment_body, line_comment,
+            stmt, decl_stmt , cuerpo_linea, exp_stm , arith_op, ope_logicos, exp_def,
+            exp_binaria, ope_compara, exp_binaria_p, asig_op,
+            asig_op_no_final, param_decl, fn_decl, param_imp, fn_imp;
+
+Grammar ::= Ruler ;
+Ruler ::= stmt;
+stmt ::= decl_stmt punto_coma | decl_stmt corch_derec | decl_stmt corch_derec stmt | decl_stmt punto_coma stmt;
+
+decl_stmt ::=  let:enl Doc:variable Asig exp_stm:decl_exp 
+{:
+   Tokens token = new Tokens(variable.toString(), decl_exp.toString());
+   parser.agregarToken(token);
+   Objeto obj = new Objeto (variable.toString(), decl_exp.toString() , enl.toString());
+   parser.agregar_obj(obj);
+
+:}
+|asig_op_no_final
+| Comment 
+| senten_si exp_binaria:exp corch_izq stmt {:
+    parser.agregarSi((ExpBinaria) exp);
+   // parser.ejecutar();
+:}
+| senten_mientras exp_binaria:exp corch_izq stmt {: 
+    parser.agregarMientras((ExpBinaria) exp);
+   // parser.ejecutar();
+     
+:}
+
+| senten_para parent_izq asig_op exp_binaria:exp punto_coma asig_op_no_final parent_derec corch_izq stmt
+{:
+
+    parser.agregarPara((ExpBinaria) exp);
+
+:}
+| fn_decl | fn_imp ;
+
+asig_op ::= Doc Asig exp_stm punto_coma ; 
+
+asig_op_no_final ::= Doc:variable Asig exp_stm:decl_exp 
+   {:
+   Objeto obj = new Objeto (variable.toString(), decl_exp.toString() , "enlace");
+   parser.agregar_obj(obj); :}; 
+
+exp_stm ::= exp_def :exp {: RESULT = exp; :} 
+        
+| exp_def:term1 arith_op:op exp_stm:term2
+    {:
+        System.out.print("Operacion Matematica");
+        switch(op.toString()){
+            case "+":
+                RESULT = Integer.parseInt(term1.toString()) + Integer.parseInt(term2.toString());
+                break;
+            case "*":
+                RESULT = Integer.parseInt(term1.toString()) * Integer.parseInt(term2.toString());
+                break;
+            case "-":
+                RESULT = Integer.parseInt(term1.toString()) - Integer.parseInt(term2.toString());
+                break;
+            case "/":
+                RESULT = Integer.parseInt(term1.toString()) / Integer.parseInt(term2.toString());
+                break;
+         } 
+    :};
+
+arith_op ::= Suma:res {: 
+                    RESULT = res;
+            :} 
+            |Resta:res {:
+                    RESULT = res;
+             :} 
+            | Divide:res {: 
+                    RESULT =res;
+    
+            :} 
+            | Multipl:res {: 
+                    RESULT = res;
+            :};
+
+
+fn_decl ::= senten_fn Doc parent_izq param_decl parent_derec corch_izq decl_stmt corch_derec ;
+
+fn_imp ::= Doc parent_izq param_imp parent_derec punto_coma ;
+
+param_imp ::= exp_stm | exp_stm coma param_imp |  /*Epsilon*/ ;
+
+param_decl ::= Doc | Doc coma param_decl | /*Epsilon*/ ;
+
+exp_binaria ::= exp_def 
+| exp_def ope_logicos exp_binaria 
+| exp_def:expIzq ope_compara: op exp_def:expDer {: 
+    String tokenA = expIzq.toString();
+    String tokenB = expDer.toString();
+    boolean a= parser.validarNumerico(tokenA);
+    boolean b= parser.validarNumerico(tokenB);
+   
+    if(!b&&(!(parser.existeToken(tokenB) == true))){
+        System.err.println("error no ha sido inicializada:"+ tokenB + ": Error Semantico");
+    }
+    
+    if(!a&&(!(parser.existeToken(tokenA) == true))){
+        System.err.println("error no ha sido inicializada:" + tokenA);
+    }
+    RESULT = new ExpBinaria(tokenA, tokenB, op.toString()); 
+:}
+| ope_neg exp_binaria | exp_binaria_p | exp_binaria_p ope_logicos exp_binaria;
+
+exp_binaria_p ::=  parent_izq exp_binaria parent_derec ;
+
+ope_logicos ::= ope_and | ope_or ;
+
+ope_compara ::= ope_comp 
+            | ope_diferente:op {: RESULT=op; :} 
+            | ope_menor_igual:op {: RESULT=op; :} 
+            | ope_mayor_igual:op {: RESULT=op; :} 
+            | ope_menor:op {: RESULT=op; :} 
+            | ope_mayor:op {: RESULT=op; :}  ;
+
+exp_def ::= Doc:variable {: RESULT = variable; :}  | Number:num {: RESULT = num; :} ;
+
+Comment ::= line_comment | block_comment;
+line_comment ::= LINE_COMMENT | LINE_COMMENT cuerpo_linea ;
+cuerpo_linea ::= Doc | Doc cuerpo_linea;
+
+block_comment ::= INI_COMMENT block_comment_body FIN_COMMENT;
+block_comment_body ::= Doc | Doc block_comment_body;
+
+
+Doc ::= ident:variable {:RESULT = variable;:};
+ident ::= ID:id {: RESULT = id;:};
